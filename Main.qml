@@ -2,18 +2,19 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+import "js/DateUtils.js" as DateUtils
 
-
-Window {
+ApplicationWindow {
 
     property var products: productService.fetchProducts()
+    property var dailyProducts: productService.fetchDailyProductEntries(DateUtils.getCurrentISODate())
+
     width: 420
     height: 780
     visible: true
     title: qsTr("Hello World")
 
     color: "#DEE4E7"
-
 
 
     ColumnLayout {
@@ -35,20 +36,34 @@ Window {
                }
            }
 
-        ListView {
+        RowLayout {
+                   Layout.fillWidth: true
+                   spacing: 10
+
+                   Button {
+                       text: "Все продукты"
+                       onClicked: {
+                           enableProductList()
+                       }
+                       Layout.fillWidth: true
+                   }
+
+                   Button {
+                       text: "Рацион"
+                       Layout.fillWidth: true
+                       onClicked: {
+                           enableDailyProducts()
+                       }
+                   }
+               }
+
+        Loader {
+            id: productListLoader
             Layout.fillWidth: true
             Layout.fillHeight: true
-            model: products
-            spacing: 10
-            delegate: Product {
-                width: parent.width
-                productName: modelData.name
-                protein: modelData.protein
-                fat: modelData.fat
-                carbohydrates: modelData.carbs
-                calory: modelData.calories
-            }
+            source: "ProductList.qml"
         }
+
 
         Button {
             text: "Добавить продукт"
@@ -111,9 +126,68 @@ Window {
            }
        }
 
+    Dialog {
+        id: weightInputDialog
+        title: "Добавить продукт"
+        standardButtons: Dialog.NoButton
+        width: parent.width / 2
+        modal: true
+        anchors.centerIn: parent
 
-    function refreshProducts() {
-        products = productService.fetchProducts()
+        property int calories: 0
+        property int productId: 0
+
+        ColumnLayout {
+
+            width: parent.width
+            spacing: 10
+            anchors.margins: 20
+
+            TextField {
+                id: weightInput
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.margins: 10
+                placeholderText: "Вес (гр.)"
+                inputMethodHints: Qt.ImhDigitsOnly
+                onTextChanged: calculateCalories()
+            }
+
+            Text {
+                id: resultText
+                text: "Калорий: 0"
+                font.pixelSize: 16
+                font.bold: true
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            RowLayout {
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 10
+
+                Button {
+                    text: "Добавить"
+                    onClicked: {
+                        productService.addDailyProductEntry(
+                            weightInputDialog.productId,
+                            getDialogCalories(),
+                            DateUtils.getCurrentISODate()
+                        );
+                        refreshDailyProducts()
+                        weightInputDialog.close();
+                        weightInput.clear();
+                    }
+                }
+
+                Button {
+                    text: "Отмена"
+                    onClicked: {
+                        weightInputDialog.close()
+                        weightInput.clear()
+                    }
+                }
+            }
+        }
     }
 
     function clearInputs() {
@@ -126,7 +200,24 @@ Window {
     }
 
 
+    function calculateCalories() {
+        resultText.text = "Калорий: " + getDialogCalories().toFixed(2);
+    }
+
+    function getDialogCalories() {
+        var weight = parseInt(weightInput.text) || 0;
+        return parseInt((weight / 100) * weightInputDialog.calories);
+    }
+
+    function enableDailyProducts() {
+        productListLoader.source = "DailyProducts.qml"
+    }
+    function enableProductList() {
+        productListLoader.source = "ProductList.qml"
+    }
+
     Component.onCompleted: {
         productService.productsChanged.connect(refreshProducts)
+        productService.dailyProductsChanged.connect(refreshDailyProducts())
     }
 }

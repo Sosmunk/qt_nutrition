@@ -13,7 +13,6 @@ Item {
     property string fat
     property string carbohydrates
     property string calory
-    signal requestWeightInput
 
 
     Rectangle {

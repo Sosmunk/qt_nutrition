@@ -21,6 +21,12 @@ qt_add_qml_module(appnutrition
         SOURCES
         QML_FILES Product.qml
         SOURCES productservice.h productservice.cpp
+        QML_FILES js/DateUtils.js
+        QML_FILES
+        QML_FILES Main_copy.qml
+        QML_FILES DailyProduct.qml
+        QML_FILES ProductList.qml
+        QML_FILES DailyProducts.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
