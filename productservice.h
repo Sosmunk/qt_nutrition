@@ -129,6 +129,19 @@ public:
         return dailyProducts;
     }
 
+    Q_INVOKABLE void removeDailyProduct(int entryId) {
+        QSqlQuery query;
+        query.prepare("DELETE FROM daily_products WHERE id = :id");
+        query.bindValue(":id", entryId);
+
+        if (!query.exec()) {
+            qDebug() << "Failed to remove daily product entry:" << query.lastError();
+        } else {
+            emit dailyProductsChanged();
+            qDebug() << "Removed daily product entry with ID:" << entryId;
+        }
+    }
+
 signals:
     void productsChanged();
     void dailyProductsChanged();

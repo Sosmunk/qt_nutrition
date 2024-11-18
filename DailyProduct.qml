@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls.Basic
 import QtQuick.Layouts
 
 
@@ -8,95 +8,100 @@ Item {
 
     height: icon.height + icon.anchors.margins * 2
     property alias productName: nameText.text
+    property int dailyProductId
     property int productId;
     property string protein
     property string fat
     property string carbohydrates
     property string calory
+    property string weight
+    signal requestDeleteProduct
 
 
     Rectangle {
         anchors.fill: parent
         radius: 6
-        color: "lightsteelblue"
+        color: "beige"
 
         Button {
             id: icon
-            text: "+"
+            text: "-"
             anchors.left: parent.left
             anchors.top: parent.top
-            anchors.margins: 6
+            anchors.margins: 10
             width: 30
             height: 30
             font.pixelSize: 24
             font.bold: true
-            property color defaultColor: "mediumseagreen"
-            property color clickedColor: "coral"
+            property color defaultColor: "darkred"
+            property color clickedColor: "darkred"
 
             background: Rectangle {
                 id: buttonBackground
                 color: icon.defaultColor
-                border.color: "darkgreen"
+                border.color: "black"
                 border.width: 2
             }
 
-            contentItem: Item {
-                Text {
-                    text: icon.text
-                    color: "white"
-                    font.bold: true
-                    font.pixelSize: 24
-                    anchors.centerIn: parent
-                    anchors.bottomMargin: 50
-
-                }
+            Text {
+                text: icon.text
+                color: "green"
+                font.bold: true
+                font.pixelSize: 24
+                fontSizeMode: Text.Fit
+                anchors.fill: parent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
 
             MouseArea {
                 anchors.fill: parent
-                onEntered: buttonBackground.color = "seagreen"
+                onEntered: buttonBackground.color = "black"
                 onExited: buttonBackground.color = icon.defaultColor
                 onClicked: {
+                    productService.removeDailyProduct(dailyProductId)
                     buttonBackground.color = (buttonBackground.color === icon.defaultColor) ? icon.clickedColor : icon.defaultColor
-                    requestWeightInput()
                 }
 
             }
-        }
-
-            RowLayout {
-
-                anchors {
-                    left: icon.right
-                    top: parent.top
-                    leftMargin: 5
-                    topMargin: 5
-                }
-
-                Text {
-                    id: nameText
-                    font.bold: true
-                    Layout.alignment: Qt.AlignVCenter
-                }
-            }
-
         }
 
         RowLayout {
-
             anchors {
-                right: parent.right
+                left: icon.right
                 top: parent.top
-                rightMargin: 5
+                leftMargin: 5
                 topMargin: 5
             }
-            spacing: 10
 
+            Text {
+                id: nameText
+                Layout.maximumWidth: 100
+                font.bold: true
+                Layout.alignment: Qt.AlignVCenter
+                wrapMode: Text.WordWrap
+            }
+
+
+        }
+
+    }
+    ColumnLayout {
+
+        anchors {
+            right: parent.right
+            top: parent.top
+            rightMargin: 5
+            topMargin: 5
+        }
+
+        RowLayout {
+            spacing: 10
 
             Text {
                 id: p
                 text: "Б"
-                color: "yellow"
+                color: "black"
                 font.pixelSize: 10
             }
             Text {
@@ -107,7 +112,7 @@ Item {
             Text {
                 id: f
                 text: "Ж"
-                color: "yellow"
+                color: "black"
                 font.pixelSize: 10
             }
 
@@ -120,7 +125,7 @@ Item {
             Text {
                 id: c
                 text: "У"
-                color: "yellow"
+                color: "black"
                 font.pixelSize: 10
             }
 
@@ -130,10 +135,18 @@ Item {
                 font.pixelSize: 14
             }
 
+
+        }
+
+        RowLayout {
+            Layout.alignment: Qt.AlignRight
+            Layout.bottomMargin: 5
+
+
             Text {
                 id: ccal
                 text: "ККАЛ"
-                color: "yellow"
+                color: "black"
                 font.pixelSize: 10
             }
 
@@ -142,6 +155,21 @@ Item {
                 text: calory
                 font.pixelSize: 14
             }
-        }
 
+            Text {
+                id: weightText
+                text: "Гр."
+                font.pixelSize: 14
+            }
+            Text {
+                id: weightValue
+                text: weight
+                font.pixelSize: 14
+            }
+        }
     }
+
+}
+
+
+

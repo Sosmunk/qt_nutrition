@@ -21,41 +21,39 @@ ApplicationWindow {
         anchors.fill: parent
         anchors.margins: 20
 
-
         Rectangle {
-               Layout.fillWidth: true
-               height: 50
-               color: "lightgray"
-               border.color: "darkgray"
+            Layout.fillWidth: true
+            height: 50
+            color: "lightgray"
+            border.color: "darkgray"
 
-               Text {
-                   text: "Список продуктов"
-                   font.pixelSize: 24
-                   horizontalAlignment: Text.AlignHCenter
-                   anchors.centerIn: parent
-               }
-           }
+            Text {
+                text: "Список продуктов"
+                font.pixelSize: 24
+                horizontalAlignment: Text.AlignHCenter
+                anchors.centerIn: parent
+            }
+        }
 
         RowLayout {
-                   Layout.fillWidth: true
-                   spacing: 10
+            spacing: 10
 
-                   Button {
-                       text: "Все продукты"
-                       onClicked: {
-                           enableProductList()
-                       }
-                       Layout.fillWidth: true
-                   }
+            Button {
+                text: "Все продукты"
+                onClicked: {
+                    enableProductList()
+                }
+                Layout.fillWidth: true
+            }
 
-                   Button {
-                       text: "Рацион"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           enableDailyProducts()
-                       }
-                   }
-               }
+            Button {
+                text: "Дневной рацион"
+                Layout.fillWidth: true
+                onClicked: {
+                    enableDailyProducts()
+                }
+            }
+        }
 
         Loader {
             id: productListLoader
@@ -64,6 +62,32 @@ ApplicationWindow {
             source: "ProductList.qml"
         }
 
+        ColumnLayout {
+            id: total
+            visible: false
+            Text {
+                id: totalCalories
+                text: "Всего калорий: 0"
+            }
+
+            RowLayout {
+                Text {
+                    id: totalCarbs
+                    text: 'Углеводов:'
+                }
+
+                Text {
+                    id: totalProteins
+                    text: "Белков: "
+                }
+
+                Text {
+                    id: totalFats
+                    text: "Жиров: "
+                }
+            }
+
+        }
 
         Button {
             text: "Добавить продукт"
@@ -73,64 +97,67 @@ ApplicationWindow {
                 addProductDialog.open();
             }
         }
+
+
     }
 
     Dialog {
-           id: addProductDialog
-           title: "Добавить продукт"
-           standardButtons: Dialog.Ok | Dialog.Cancel
-           anchors.centerIn: parent
+        id: addProductDialog
+        title: "Добавить продукт"
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        anchors.centerIn: parent
 
-           ColumnLayout {
-               spacing: 10
-               anchors.margins: 20
+        ColumnLayout {
+            spacing: 10
+            anchors.margins: 20
+            Layout.alignment: Qt.AlignHCenter
 
-               TextField {
-                   id: nameInput
-                   placeholderText: "Название продукта"
-               }
-               TextField {
-                   id: caloriesInput
-                   placeholderText: "Калории"
-                   inputMethodHints: Qt.ImhDigitsOnly
-               }
-               TextField {
-                   id: proteinInput
-                   placeholderText: "Белки"
-                   inputMethodHints: Qt.ImhDigitsOnly
-               }
-               TextField {
-                   id: fatInput
-                   placeholderText: "Жиры"
-                   inputMethodHints: Qt.ImhDigitsOnly
-               }
-               TextField {
-                   id: carbsInput
-                   placeholderText: "Углеводы"
-                   inputMethodHints: Qt.ImhDigitsOnly
+            TextField {
+                id: nameInput
+                placeholderText: "Название продукта"
+            }
+            TextField {
+                id: caloriesInput
+                placeholderText: "Калории"
+                inputMethodHints: Qt.ImhDigitsOnly
+            }
+            TextField {
+                id: proteinInput
+                placeholderText: "Белки"
+                inputMethodHints: Qt.ImhDigitsOnly
+            }
+            TextField {
+                id: fatInput
+                placeholderText: "Жиры"
+                inputMethodHints: Qt.ImhDigitsOnly
+            }
+            TextField {
+                id: carbsInput
+                placeholderText: "Углеводы"
+                inputMethodHints: Qt.ImhDigitsOnly
 
-               }
-           }
+            }
+        }
 
-           onAccepted: {
-               productService.addEntry(
-                   nameInput.text,
-                   parseInt(caloriesInput.text) ? parseInt(caloriesInput.text) : 0,
-                   parseInt(proteinInput.text ? parseInt(proteinInput.text) : 0),
-                   parseInt(fatInput.text) ? parseInt(fatInput.text) : 0,
-                   parseInt(carbsInput.text ? parseInt(carbsInput.text) : 0)
-               );
+        onAccepted: {
+            productService.addEntry(
+                        nameInput.text,
+                        parseInt(caloriesInput.text) ? parseInt(caloriesInput.text) : 0,
+                        parseInt(proteinInput.text ? parseInt(proteinInput.text) : 0),
+                        parseInt(fatInput.text) ? parseInt(fatInput.text) : 0,
+                        parseInt(carbsInput.text ? parseInt(carbsInput.text) : 0)
+                        );
 
-               clearInputs();
+            clearInputs();
 
-           }
-       }
+        }
+    }
 
     Dialog {
         id: weightInputDialog
         title: "Добавить продукт"
         standardButtons: Dialog.NoButton
-        width: parent.width / 2
+        width: parent.width * 0.7
         modal: true
         anchors.centerIn: parent
 
@@ -145,12 +172,12 @@ ApplicationWindow {
 
             TextField {
                 id: weightInput
-                anchors.top: parent.top
-                anchors.left: parent.left
                 anchors.margins: 10
                 placeholderText: "Вес (гр.)"
                 inputMethodHints: Qt.ImhDigitsOnly
                 onTextChanged: calculateCalories()
+                Layout.alignment: Qt.AlignHCenter
+
             }
 
             Text {
@@ -158,22 +185,21 @@ ApplicationWindow {
                 text: "Калорий: 0"
                 font.pixelSize: 16
                 font.bold: true
-                horizontalAlignment: Text.AlignHCenter
+                Layout.alignment: Qt.AlignHCenter
             }
 
             RowLayout {
-                anchors.horizontalCenter: parent.horizontalCenter
+                Layout.alignment: Qt.AlignHCenter
                 spacing: 10
 
                 Button {
                     text: "Добавить"
                     onClicked: {
                         productService.addDailyProductEntry(
-                            weightInputDialog.productId,
-                            getDialogCalories(),
-                            DateUtils.getCurrentISODate()
-                        );
-                        refreshDailyProducts()
+                                    weightInputDialog.productId,
+                                    parseInt(weightInput.text),
+                                    DateUtils.getCurrentISODate()
+                                    );
                         weightInputDialog.close();
                         weightInput.clear();
                     }
@@ -211,13 +237,11 @@ ApplicationWindow {
 
     function enableDailyProducts() {
         productListLoader.source = "DailyProducts.qml"
+        total.visible = true
     }
     function enableProductList() {
-        productListLoader.source = "ProductList.qml"
-    }
 
-    Component.onCompleted: {
-        productService.productsChanged.connect(refreshProducts)
-        productService.dailyProductsChanged.connect(refreshDailyProducts())
+        total.visible = false
+        productListLoader.source = "ProductList.qml"
     }
 }

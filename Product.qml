@@ -1,12 +1,12 @@
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls.Basic
 import QtQuick.Layouts
 
 
 Item {
     id: root
 
-    height: icon.height + icon.anchors.margins * 2
+    height: icon.height + icon.anchors.margins * 3
     property alias productName: nameText.text
     property int productId;
     property string protein
@@ -42,14 +42,15 @@ Item {
             }
 
             contentItem: Item {
+
                 Text {
                     text: icon.text
                     color: "white"
                     font.bold: true
                     font.pixelSize: 24
-                    anchors.centerIn: parent
-                    anchors.bottomMargin: 50
-
+                    anchors.fill: parent
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
             }
 
@@ -65,34 +66,37 @@ Item {
             }
         }
 
-            RowLayout {
-
-                anchors {
-                    left: icon.right
-                    top: parent.top
-                    leftMargin: 5
-                    topMargin: 5
-                }
-
-                Text {
-                    id: nameText
-                    font.bold: true
-                    Layout.alignment: Qt.AlignVCenter
-                }
+        RowLayout {
+            anchors {
+                left: icon.right
+                top: parent.top
+                leftMargin: 5
+                topMargin: 5
             }
+
+            Text {
+                id: nameText
+                Layout.maximumWidth: 100
+                font.bold: true
+                Layout.alignment: Qt.AlignVCenter
+                wrapMode: Text.WordWrap
+            }
+
 
         }
 
+    }
+    ColumnLayout {
+
+        anchors {
+            right: parent.right
+            top: parent.top
+            rightMargin: 5
+            topMargin: 5
+        }
+
         RowLayout {
-
-            anchors {
-                right: parent.right
-                top: parent.top
-                rightMargin: 5
-                topMargin: 5
-            }
             spacing: 10
-
 
             Text {
                 id: p
@@ -131,6 +135,14 @@ Item {
                 font.pixelSize: 14
             }
 
+
+        }
+
+        RowLayout {
+
+            Layout.bottomMargin: 5
+            Layout.alignment: Qt.AlignRight
+
             Text {
                 id: ccal
                 text: "ККАЛ"
@@ -144,5 +156,6 @@ Item {
                 font.pixelSize: 14
             }
         }
-
     }
+
+}
